@@ -2,7 +2,7 @@ import { Router } from "express"
 import productsRouter  from "@modules/products/routes/products.routes"
 import usersRouter from "@modules/Users/routes/users.routes"
 import sessionRouter from "@modules/Users/routes/sessions.routes"
-import passwordRouter from "@modules/Users/routes/Password.routes"
+import passwordRouter from "@modules/Users/routes/password.routes"
 
 const router = Router()
 
