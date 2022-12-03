@@ -22,7 +22,12 @@ class UpdateUserAvatarService {
         }
 
         if(user.avatar) {
+
+            console.log(user.avatar);
+            console.log(uploadConfig.directory);
+
             const userAvatarFilePath = path.join(uploadConfig.directory, user.avatar)
+
 
             const userAvatarFileExists = await fs.promises.stat(userAvatarFilePath)
 
