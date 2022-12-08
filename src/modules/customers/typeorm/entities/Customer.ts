@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 
-@Entity('customer')
+@Entity('customers')
 class Customer {
     @PrimaryGeneratedColumn('uuid')
     id: string;

@@ -13,14 +13,13 @@ class CreateCustomerService {
         const customersRepository = getCustomRepository(CustomersRepository)
 
         const emailExists = await customersRepository.findByEmail(email)
-
         if(emailExists) {
             throw new AppError('Email address already exists')
         }
+        const customer = customersRepository.create({name, email})
 
-        const customer = await customersRepository.create({name, email})
+        const saved = await customersRepository.save(customer)
 
-        await customersRepository.save(customer)
 
         return customer
     }
