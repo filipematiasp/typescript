@@ -4,7 +4,6 @@ import Order from "../typeorm/entities/Order";
 import { OrdersRepository } from "../typeorm/repositories/OrdersRepository";
 import { CustomersRepository } from "@modules/customers/typeorm/repositories/CustomersRepositories";
 import { ProductRepository } from "@modules/products/typeorm/repositories/ProductsRepository";
-
 interface IProduct {
     id: string,
     quantity: number
@@ -49,8 +48,7 @@ class CreateOrderService {
 
          if(quantityAvailable.length){
             throw new AppError(
-                `The quantity ${quantityAvailable[0].quantity}
-                is not available for ${quantityAvailable[0].id}`
+                `The quantity ${quantityAvailable[0].quantity} is not available for ${quantityAvailable[0].id}`
             )
         }
 
@@ -60,10 +58,23 @@ class CreateOrderService {
             price: existsProducts.filter(p => p.id === product.id)[0].price
         }))
 
-        const order = await ordersRepository.createOrder
+        const order = await ordersRepository.createOrder({
+            customer: customerExists,
+            products: serializedProducts
+        })
 
+        const { order_products } = order
 
+        const updateProductQuantity = order_products.map(
+            product => ({
+                id: product.product_id,
+                quantity: existsProducts.filter(p => p.id === product.product_id)[0].quantity - product.quantity
+            })
+        )
 
+        await productsRepository.save(updateProductQuantity)
+
+        return order
     }
 }
 
