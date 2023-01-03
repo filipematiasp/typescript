@@ -4,6 +4,8 @@ import path from "path";
 import { UsersRepository } from "../typeorm/repositories/UsersRepositories";
 import { UserTokenRepository } from "../typeorm/repositories/UserTokenRepositories";
 import EtherealMail from '@config/mail/EtherealMail'
+import SESMail from '@config/mail/SESMail'
+import mailConfig from '@config/mail/mail'
 
 interface IRequest {
     email: string;
@@ -23,6 +25,24 @@ class SendForgotPasswordEmailService {
         const { token } = await userTokenRepository.generate(user.id)
 
         const forgotPasswordTemplate = path.resolve(__dirname, '..', 'views', 'forgot_password.hbs')
+
+        if(mailConfig.driver === 'ses'){
+            await SESMail.senMail({
+                to: {
+                    name: user.name,
+                    email: email
+                },
+                subject: '[API Vendas] Recuperação de senha',
+                templateData: {
+                    file: forgotPasswordTemplate,
+                    variables: {
+                        name: user.name,
+                        link: `${process.env.APP_WEB_URL}/reset_password?token=${token}`
+                    }
+                }
+            })
+            return
+        }
 
         await EtherealMail.senMail({
             to: {
